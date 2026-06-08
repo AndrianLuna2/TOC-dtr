@@ -40,7 +40,7 @@ export default function DashboardPage() {
         <div className="space-y-3">
           {summaries
             .sort((a, b) => b.progress - a.progress)
-            .map(({ student, totalMinutes, totalHours, remainingMins, progress, remaining, daysLogged }) => (
+            .map(({ student, totalMinutes, totalHours, remainingMins, progress, remaining, daysLogged, requiredDays }) => (
             <div key={student.id} className="bg-white border border-stone-200 rounded-xl p-5">
               <div className="flex items-center gap-4">
                 <Avatar name={student.name} size="md" />
@@ -76,7 +76,9 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <p className="text-xs text-stone-400 mb-0.5">Days</p>
-                    <p className="font-mono text-sm font-semibold text-stone-800">{daysLogged}</p>
+                    <p className="font-mono text-sm font-semibold text-stone-800">
+                      {daysLogged} / {requiredDays}
+                    </p>
                   </div>
                   <div className="w-14 text-right">
                     <p className="text-xs text-stone-400 mb-0.5">Progress</p>

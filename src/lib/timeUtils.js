@@ -9,13 +9,13 @@ export function timeToMinutes(time) {
 
 /**
  * Calculates worked minutes for one DTR row.
- * Automatically caps AM out at 12:00 and PM in at 13:00
- * to exclude the mandatory 1-hour lunch break.
+ * Only counts time when both in/out pairs are present.
+ * Returns 0 if no complete pairs exist.
  */
 export function calcRowMinutes(row) {
-  const amIn = timeToMinutes(row.am_in)
-  const amOut = timeToMinutes(row.am_out || '12:00')
-  const pmIn = timeToMinutes(row.pm_in || '13:00')
+  const amIn  = timeToMinutes(row.am_in)
+  const amOut = timeToMinutes(row.am_out)
+  const pmIn  = timeToMinutes(row.pm_in)
   const pmOut = timeToMinutes(row.pm_out)
 
   const amMins = amIn != null && amOut != null ? Math.max(0, amOut - amIn) : 0

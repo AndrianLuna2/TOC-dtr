@@ -8,6 +8,8 @@ import { formatMinutes, currentMonth } from '@/lib/timeUtils'
 import { exportDTRtoWord } from '@/lib/dtrExport'
 import toast from 'react-hot-toast'
 
+const HOURS_PER_DAY = 8
+
 export default function DTRPage() {
   const { students } = useStudents()
   const [studentId, setStudentId] = useState('')
@@ -17,8 +19,20 @@ export default function DTRPage() {
   const { rows, loading, saving, totalMinutes, addMonth, updateRow, removeRow } =
     useDTR(studentId, month)
 
-  const selectedStudent = students.find(s => s.id === studentId)
-  const requiredMins = (selectedStudent?.required_hours || 486) * 60
+  const selectedStudent   = students.find(s => s.id === studentId)
+  const requiredHours     = selectedStudent?.required_hours || 486
+  const requiredMins      = requiredHours * 60
+  const requiredDays      = Math.ceil(requiredHours / HOURS_PER_DAY)          // 486 / 8 = 61 days
+
+  // Only count rows that actually earned minutes (complete in/out pair)
+  const daysLogged        = rows.filter(r => {
+    const toMins = t => { if (!t) return null; const [h, m] = t.split(':').map(Number); return h * 60 + m }
+    const amMins = toMins(r.am_in) != null && toMins(r.am_out) != null ? Math.max(0, toMins(r.am_out) - toMins(r.am_in)) : 0
+    const pmMins = toMins(r.pm_in) != null && toMins(r.pm_out) != null ? Math.max(0, toMins(r.pm_out) - toMins(r.pm_in)) : 0
+    return (amMins + pmMins) > 0
+  }).length
+
+  const daysRemaining     = Math.max(0, requiredDays - daysLogged)
 
   const handleExportWord = async () => {
     if (!selectedStudent) return toast.error('Select an intern first.')
@@ -61,10 +75,14 @@ export default function DTRPage() {
       {studentId && (
         <div className="grid grid-cols-3 gap-3 mb-5">
           <StatCard label="Hours this month" value={formatMinutes(totalMinutes)} />
-          <StatCard label="Days logged" value={`${rows.length} day${rows.length !== 1 ? 's' : ''}`} />
+          <StatCard
+            label="Days logged"
+            value={`${daysLogged} / ${requiredDays} days`}
+            sub={`${daysRemaining} day${daysRemaining !== 1 ? 's' : ''} remaining`}
+          />
           <StatCard
             label="Total required"
-            value={`${selectedStudent?.required_hours || 486} hrs`}
+            value={`${requiredHours} hrs`}
             sub={`${Math.max(0, Math.round((requiredMins - totalMinutes) / 60))} hrs remaining`}
           />
         </div>
@@ -75,7 +93,6 @@ export default function DTRPage() {
           <div className="flex items-center gap-2 text-sm text-stone-500">
             <CalendarDays size={15} />
             <span>{rows.length} entr{rows.length !== 1 ? 'ies' : 'y'}</span>
-            {/* Auto-save indicator */}
             {saving && (
               <span className="flex items-center gap-1 text-xs text-amber-500 ml-2">
                 <Loader2 size={11} className="animate-spin" /> Saving…

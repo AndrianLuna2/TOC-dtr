@@ -9,6 +9,13 @@
     --font-display: 'DM Serif Display', serif;
     --font-mono: 'DM Mono', monospace;
     --font-sans: 'Plus Jakarta Sans', sans-serif;
+
+    --toc-black:  #0a0a0a;
+    --toc-dark:   #141414;
+    --toc-border: #1c1c1c;
+    --toc-gold:   #e8c44a;
+    --toc-bg:     #f4f4f0;
+    --toc-muted:  #555555;
   }
 
   * {
@@ -19,7 +26,7 @@
   body {
     font-family: var(--font-sans);
     color: #1c1917;
-    background: #fafaf9;
+    background: var(--toc-bg);
   }
 
   .font-display {
@@ -35,6 +42,11 @@
     opacity: 0.4;
     cursor: pointer;
   }
+
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #d0d0cc; border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: #aaa; }
 }
 
 @layer utilities {

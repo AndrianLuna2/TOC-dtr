@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CalendarPlus, Save, CalendarDays, Clock, FileDown } from 'lucide-react'
+import { CalendarPlus, CalendarDays, Clock, FileDown, Loader2 } from 'lucide-react'
 import { useStudents } from '@/hooks/useStudents'
 import { useDTR } from '@/hooks/useDTR'
 import { DTRRow } from '@/components/dtr/DTRRow'
@@ -14,7 +14,7 @@ export default function DTRPage() {
   const [month, setMonth] = useState(currentMonth())
   const [exporting, setExporting] = useState(false)
 
-  const { rows, loading, saving, totalMinutes, addMonth, updateRow, removeRow, saveAll } =
+  const { rows, loading, saving, totalMinutes, addMonth, updateRow, removeRow } =
     useDTR(studentId, month)
 
   const selectedStudent = students.find(s => s.id === studentId)
@@ -41,7 +41,7 @@ export default function DTRPage() {
         <div>
           <h1 className="font-display text-2xl text-stone-900">Daily Time Record</h1>
           <p className="text-sm text-stone-400 mt-0.5">
-            Times are filled automatically via QR scan
+            Changes save automatically · Times filled via QR scan
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -75,25 +75,17 @@ export default function DTRPage() {
           <div className="flex items-center gap-2 text-sm text-stone-500">
             <CalendarDays size={15} />
             <span>{rows.length} entr{rows.length !== 1 ? 'ies' : 'y'}</span>
+            {/* Auto-save indicator */}
+            {saving && (
+              <span className="flex items-center gap-1 text-xs text-amber-500 ml-2">
+                <Loader2 size={11} className="animate-spin" /> Saving…
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2">
-
-            {/* Add all weekdays for the selected month */}
             <Button size="sm" onClick={addMonth} disabled={!studentId}>
               <CalendarPlus size={14} /> Add month
             </Button>
-
-            {/* Save to Supabase */}
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={saveAll}
-              disabled={!studentId || saving}
-            >
-              <Save size={14} /> {saving ? 'Saving…' : 'Save DTR'}
-            </Button>
-
-            {/* Export to Word */}
             <Button
               variant="secondary"
               size="sm"
@@ -102,7 +94,6 @@ export default function DTRPage() {
             >
               <FileDown size={14} /> {exporting ? 'Exporting…' : 'Export .docx'}
             </Button>
-
           </div>
         </div>
 

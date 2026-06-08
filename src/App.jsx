@@ -4,6 +4,8 @@ import Layout from '@/components/Layout'
 import DashboardPage from '@/pages/DashboardPage'
 import DTRPage from '@/pages/DTRPage'
 import StudentsPage from '@/pages/StudentsPage'
+import QRPage from '@/pages/QRPage'
+import ScanPage from '@/pages/ScanPage'
 
 export default function App() {
   return (
@@ -26,6 +28,8 @@ export default function App() {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/dtr" element={<DTRPage />} />
           <Route path="/students" element={<StudentsPage />} />
+          <Route path="/qr" element={<QRPage />} />
+          <Route path="/scan" element={<ScanPage />} />
         </Routes>
       </Layout>
 
